@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Bounty Calculator</title>
+</head>
+<body>
+    <h1> Bounty Calculator</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <form method="post">
+        <label for="base_score">Enter CVSS Score (between 0 and 10):</label>
+        <input type="text" name="base_score" id="base_score" required>
+        <button type="submit">Calculate Bounty</button>
+    </form>
+    {% if primary_result %}
+        <p>{{ primary_result }}</p>
+    {% endif %}
+
+    {% if secondary_result %}
+        <p>{{ secondary_result }}</p>
+    {% endif %}
+</body>
+</html>
