@@ -1,1 +1,2 @@
+pycharm or any IDE
 pip install flask
