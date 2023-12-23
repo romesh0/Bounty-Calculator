@@ -1,44 +1,49 @@
-from flask import Flask, render_template, request
+def calculate_bounty(score, target):
+# Change the bounty range according to your company policy
 
-app = Flask(__name__)
+    primary_ranges = {
+        "Low": (0.1, 3.9, 50, 250),
+        "Medium": (4, 6.9, 250, 600),
+        "High": (7, 8.9, 600, 1200),
+        "Critical": (9, 10, 1200, 3500)
+    }
 
-def calculate_bounty(base_score):
-    primary_bounty, secondary_bounty = 0, 0
+    secondary_ranges = {
+        "Low": (0.1, 3.9, 50, 125),
+        "Medium": (4, 6.9, 125, 300),
+        "High": (7, 8.9, 300, 600),
+        "Critical": (9, 10, 600, 1750)
+    }
 
-    if 0.1 <= base_score <= 3.9:
-        primary_bounty = 50 + (base_score - 0.1) * 50
-        secondary_bounty = 50 + (base_score - 0.1) * 75
-    elif 4 <= base_score <= 6.9:
-        primary_bounty = 250 + (base_score - 4) * 75
-        secondary_bounty = 125 + (base_score - 4) * 50
-    elif 7 <= base_score <= 8.9:
-        primary_bounty = 600 + (base_score - 7) * 150
-        secondary_bounty = 300 + (base_score - 7) * 100
-    elif 9 <= base_score <= 10:
-        primary_bounty = 1201 + (base_score - 9) * 880
-        secondary_bounty = 600 + (base_score - 9) * 1150
+    if target == "primary":
+        ranges = primary_ranges
+    elif target == "secondary":
+        ranges = secondary_ranges
+    else:
+        return None
 
-    return primary_bounty, secondary_bounty
+    for level, (min_score, max_score, min_bounty, max_bounty) in ranges.items():
+        if min_score <= score <= max_score:
+            print(f"{level} : ${min_bounty} - ${max_bounty}")
+            return round((score - min_score) / (max_score - min_score), 2) * (max_bounty - min_bounty) + min_bounty
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    error = None
-    primary_result = None
-    secondary_result = None
+    return None
 
-    if request.method == 'POST':
-        try:
-            base_score = float(request.form['base_score'])
-            if 0 <= base_score <= 10:
-                primary_bounty, secondary_bounty = calculate_bounty(base_score)
-                primary_result = f"The calculated primary bounty amount is ${primary_bounty:.2f}"
-                secondary_result = f"The calculated secondary bounty amount is ${secondary_bounty:.2f}"
-            else:
-                error = "Invalid CVSS score. Please enter a score between 0 and 10."
-        except ValueError:
-            error = "Invalid input. Please enter a valid number."
+while True:
+    try:
+        input_score = float(input("Enter the CVSS Score : "))
+        if 0.1 <= input_score <= 10:
+            break
+        else:
+            print("Please enter a valid score between 0.1 and 10.")
+    except ValueError:
+        print("Please enter a valid numerical score.")
 
-    return render_template('index.html', error=error, primary_result=primary_result, secondary_result=secondary_result)
+primary_bounty = calculate_bounty(input_score, "primary")
+secondary_bounty = calculate_bounty(input_score, "secondary")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if primary_bounty is not None:
+    print(f"Primary Target Bounty amount for the CVSS score {input_score} is ${primary_bounty}")
+    print(f"Secondary Target Bounty amount for the CVSS score {input_score} is ${secondary_bounty}")
+else:
+    print("Score is outside the defined ranges.")
