@@ -37,8 +37,8 @@ def index():
             base_score = float(request.form['base_score'])
             if 0 <= base_score <= 10:
                 primary_bounty, secondary_bounty = calculate_bounty(base_score)
-                primary_result = f"The calculated primary bounty amount is ${primary_bounty:.2f}"
-                secondary_result = f"The calculated secondary bounty amount is ${secondary_bounty:.2f}"
+                primary_result = f"The calculated primary bounty (Production) ${primary_bounty:.2f}"
+                secondary_result = f"The calculated secondary bounty (Non-Production) ${secondary_bounty:.2f}"
             else:
                 error = "Invalid CVSS score. Please enter a score between 0 and 10."
         except ValueError:
